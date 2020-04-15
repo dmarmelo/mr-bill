@@ -15,14 +15,12 @@ public class Api {
 
         // API endpoints
         path("/api", () -> {
-            // TODO omitir password e apiKey
-            // TODO Utility to remove
+
             get("/users/", (request, response) -> {
                 response.type("application/json");
                 return gson.toJson(User.all());
             });
 
-            // TODO Utility to remove
             get("/users/:id/", (request, response) -> {
                 response.type("application/json");
                 String id = request.params(":id");

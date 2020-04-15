@@ -16,8 +16,8 @@ public class User implements Serializable {
     public int id;
     public String name;
     public String username;
-    public String password;
-    public String apikey;
+    public transient String password;
+    public transient String apikey;
 
     // The shared SQLite connection
     private static SQLiteConn conn = SQLiteConn.getSharedInstance();
