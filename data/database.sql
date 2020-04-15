@@ -6,7 +6,7 @@ CREATE TABLE user (
     apikey TEXT
 );
 
-CREATE TABLE costumer (
+CREATE TABLE customer (
     id INTEGER PRIMARY KEY,
     user_id INTEGER,
     name TEXT,
@@ -15,7 +15,7 @@ CREATE TABLE costumer (
 
 CREATE TABLE invoice (
     id INTEGER PRIMARY KEY,
-    costumer_id INTEGER,
+    customer_id INTEGER,
     amount REAL,
     date TEXT,
     complete INTEGER
@@ -24,11 +24,11 @@ CREATE TABLE invoice (
 INSERT INTO user (name, username, password, apikey) VALUES ("Bart Simpson", "bart", "1234", "xg5idk5");
 INSERT INTO user (name, username, password, apikey) VALUES ("Homer Simpson", "homer", "1234", "fl2hsb4");
 
-INSERT INTO costumer (user_id, name, email) VALUES (1, "Lisa Simpson", "lisa@simpsons.org");
-INSERT INTO costumer (user_id, name, email) VALUES (1, "Maggie Simpson", "maggie@simpsons.org");
-INSERT INTO costumer (user_id, name, email) VALUES (2, "Marge Simpson", "marge@simpsons.org");
+INSERT INTO customer (user_id, name, email) VALUES (1, "Lisa Simpson", "lisa@simpsons.org");
+INSERT INTO customer (user_id, name, email) VALUES (1, "Maggie Simpson", "maggie@simpsons.org");
+INSERT INTO customer (user_id, name, email) VALUES (2, "Marge Simpson", "marge@simpsons.org");
 
-INSERT INTO invoice (costumer_id, amount, date, complete) VALUES (1, 12.49, "2020-02-19", 1);
-INSERT INTO invoice (costumer_id, amount, date, complete) VALUES (1, 29.99, "2020-02-20", 0);
-INSERT INTO invoice (costumer_id, amount, date, complete) VALUES (2, 9.99, "2020-02-21", 1);
-INSERT INTO invoice (costumer_id, amount, date, complete) VALUES (3, 19.99, "2020-02-21", 0);
+INSERT INTO invoice (customer_id, amount, date, complete) VALUES (1, 12.49, "2020-02-19", 1);
+INSERT INTO invoice (customer_id, amount, date, complete) VALUES (1, 29.99, "2020-02-20", 0);
+INSERT INTO invoice (customer_id, amount, date, complete) VALUES (2, 9.99, "2020-02-21", 1);
+INSERT INTO invoice (customer_id, amount, date, complete) VALUES (3, 19.99, "2020-02-21", 0);

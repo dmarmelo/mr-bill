@@ -1,7 +1,7 @@
 package dev.estgp.is;
 
 import com.google.gson.Gson;
-import dev.estgp.is.models.Costumer;
+import dev.estgp.is.models.Customer;
 import dev.estgp.is.models.User;
 import dev.estgp.is.utils.sqlite3.SQLiteConn;
 import org.junit.jupiter.api.AfterAll;
@@ -62,11 +62,11 @@ public class Tests {
     }
 
     @Test
-    // Costumer endpoint return 200 OK
-    public void testCostumerListAuthorizedUser() throws IOException, InterruptedException {
+    // Customer endpoint return 200 OK
+    public void testCustomerListAuthorizedUser() throws IOException, InterruptedException {
         User user = User.get(1);
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8000/api/costumers/?apiKey=" + user.apikey))
+                .uri(URI.create("http://localhost:8000/api/customers/?apiKey=" + user.apikey))
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -75,10 +75,10 @@ public class Tests {
     }
 
     @Test
-    // Costumer endpoint return 200 OK
-    public void testCostumerListUnauthorizedUser() throws IOException, InterruptedException {
+    // Customer endpoint return 200 OK
+    public void testCustomerListUnauthorizedUser() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8000/api/costumers/?apiKey=none"))
+                .uri(URI.create("http://localhost:8000/api/customers/?apiKey=none"))
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -87,32 +87,32 @@ public class Tests {
     }
 
     @Test
-    // Costumer endpoint return 200 OK
-    public void testCostumerOk() throws IOException, InterruptedException {
+    // Customer endpoint return 200 OK
+    public void testCustomerOk() throws IOException, InterruptedException {
         User user = User.get(1);
-        Costumer costumer = Costumer.get(1);
+        Customer customer = Customer.get(1);
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8000/api/costumers/" + costumer.id + "/?apiKey=" + user.apikey))
+                .uri(URI.create("http://localhost:8000/api/customers/" + customer.id + "/?apiKey=" + user.apikey))
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        Costumer res = gson.fromJson(response.body(), Costumer.class);
-        assertEquals(res, costumer);
+        Customer res = gson.fromJson(response.body(), Customer.class);
+        assertEquals(res, customer);
     }
 
     @Test
-    // Costumer endpoint return 200 OK
-    public void testCostumerNotOk() throws IOException, InterruptedException {
+    // Customer endpoint return 200 OK
+    public void testCustomerNotOk() throws IOException, InterruptedException {
         User user = User.get(1);
-        Costumer costumer = Costumer.get(2);
+        Customer customer = Customer.get(2);
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8000/api/costumers/" + 1 + "/?apiKey=" + user.apikey))
+                .uri(URI.create("http://localhost:8000/api/customers/" + 1 + "/?apiKey=" + user.apikey))
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        Costumer res = gson.fromJson(response.body(), Costumer.class);
-        assertNotEquals(res, costumer);
+        Customer res = gson.fromJson(response.body(), Customer.class);
+        assertNotEquals(res, customer);
     }
 }

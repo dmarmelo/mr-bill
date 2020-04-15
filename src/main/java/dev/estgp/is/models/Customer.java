@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Costumer model
+ * Customer model
  */
-public class Costumer implements Serializable {
+public class Customer implements Serializable {
 
     // Database fields
     public int id;
@@ -24,12 +24,12 @@ public class Costumer implements Serializable {
     private static SQLiteConn conn = SQLiteConn.getSharedInstance();
 
     // Default constructor
-    public Costumer() {
+    public Customer() {
 
     }
 
     // DBRow constructor
-    public Costumer(DBRow row) {
+    public Customer(DBRow row) {
         super();
         this.id = (int) row.get("id");
         this.user_id = (int) row.get("user_id");
@@ -37,69 +37,69 @@ public class Costumer implements Serializable {
         this.email = (String) row.get("email");
     }
 
-    // Returns costumer by id
-    public static Costumer get(int id) {
-        String sql = String.format("select * from costumer where id=%d", id);
+    // Returns customer by id
+    public static Customer get(int id) {
+        String sql = String.format("select * from customer where id=%d", id);
         DBRowList rows = conn.executeQuery(sql);
-        return rows.first(Costumer.class);
+        return rows.first(Customer.class);
     }
 
-    // Returns costumer by user
-    public static List<Costumer> getByUser(User user) {
-        ArrayList<Costumer> costumers = new ArrayList<>();
-        String sql = String.format("select * from costumer where user_id=%d", user.id);
+    // Returns customer by user
+    public static List<Customer> getByUser(User user) {
+        ArrayList<Customer> customers = new ArrayList<>();
+        String sql = String.format("select * from customer where user_id=%d", user.id);
         DBRowList rows = conn.executeQuery(sql);
         for (DBRow row: rows) {
-            Costumer costumer = new Costumer(row);
-            costumers.add(costumer);
+            Customer customer = new Customer(row);
+            customers.add(customer);
         }
-        return costumers;
+        return customers;
     }
 
 
-    // Returns list of costumers
-    public static ArrayList<Costumer> all() {
-        ArrayList<Costumer> costumers = new ArrayList<>();
-        DBRowList rows = conn.executeQuery("select * from costumer");
+    // Returns list of customers
+    public static ArrayList<Customer> all() {
+        ArrayList<Customer> customers = new ArrayList<>();
+        DBRowList rows = conn.executeQuery("select * from customer");
         for (DBRow row : rows) {
-            Costumer costumer = new Costumer(row);
-            costumers.add(costumer);
+            Customer customer = new Customer(row);
+            customers.add(customer);
         }
-        return costumers;
+        return customers;
     }
 
-    // Returns costumers by User
-    public static ArrayList<Costumer> get(User user) {
-        ArrayList<Costumer> costumers = new ArrayList<>();
-        DBRowList rows = conn.executeQuery("select * from costumer where user_id=" + user.id);
+    // Returns customers by User
+    public static ArrayList<Customer> get(User user) {
+        ArrayList<Customer> customers = new ArrayList<>();
+        DBRowList rows = conn.executeQuery("select * from customer where user_id=" + user.id);
         for (DBRow row : rows) {
-            Costumer costumer = new Costumer(row);
-            costumers.add(costumer);
+            Customer customer = new Customer(row);
+            customers.add(customer);
         }
-        return costumers;
+        return customers;
     }
 
-    // Inserts this costumer
+    // Inserts this customer
     public int insert() {
-        String sql = String.format("INSERT INTO costumer (user_id, name, email) VALUES (%d, '%s', '%s')",
+        String sql = String.format("INSERT INTO customer (user_id, name, email) VALUES (%d, '%s', '%s')",
                 user_id, name, email);
         return conn.executeUpdate(sql);
     }
 
-    // Updates this costumer
+    // Updates this customer
     public int update() {
-        String sql = String.format("UPDATE costumer SET user_id=%d, name='%s', email='%s' WHERE id=%d",
+        String sql = String.format("UPDATE customer SET user_id=%d, name='%s', email='%s' WHERE id=%d",
                 user_id, name, email, id);
         return conn.executeUpdate(sql);
     }
 
-    // Deletes this costumer
+    // Deletes this customer
     public void delete() {
-        String sql = String.format("DELETE FROM costumer WHERE id=%d", id);
+        String sql = String.format("DELETE FROM customer WHERE id=%d", id);
         conn.executeUpdate(sql);
     }
 
-    // Saves this costumer
+    // Saves this customer
     public int save() {
         if (id == 0) {
             return insert();
@@ -110,7 +110,7 @@ public class Costumer implements Serializable {
 
     @Override
     public String toString() {
-        return "Costumer {" +
+        return "Customer {" +
                 "id=" + id +
                 ", user_id=" + user_id +
                 ", name='" + name + '\'' +
@@ -138,11 +138,11 @@ public class Costumer implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Costumer costumer = (Costumer) o;
-        return id == costumer.id &&
-                user_id == costumer.user_id &&
-                Objects.equals(name, costumer.name) &&
-                Objects.equals(email, costumer.email);
+        Customer customer = (Customer) o;
+        return id == customer.id &&
+                user_id == customer.user_id &&
+                Objects.equals(name, customer.name) &&
+                Objects.equals(email, customer.email);
     }
 
     @Override

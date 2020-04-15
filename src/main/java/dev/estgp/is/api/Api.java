@@ -2,7 +2,7 @@ package dev.estgp.is.api;
 
 import com.google.gson.Gson;
 import dev.estgp.is.Application;
-import dev.estgp.is.models.Costumer;
+import dev.estgp.is.models.Customer;
 import dev.estgp.is.models.User;
 
 import static spark.Spark.*;
@@ -73,19 +73,19 @@ public class Api {
                 return "";
             });
 
-            get("/costumers/", (request, response) -> {
+            get("/customers/", (request, response) -> {
                 // Retornar a lista de todos os meus clientes
                 User user = request.attribute(Application.USER_KEY);
-                return gson.toJson(Costumer.get(user));
+                return gson.toJson(Customer.get(user));
             });
 
-            get("/costumers/:id/", (request, response) -> {
+            get("/customers/:id/", (request, response) -> {
                 User user = request.attribute(Application.USER_KEY);
-                String costumerId = request.params(":id");
-                Costumer costumer = Costumer.get(Integer.parseInt(costumerId));
-                if (costumer != null) {
-                    if (costumer.user_id == user.id) {
-                        return gson.toJson(costumer);
+                String customerId = request.params(":id");
+                Customer customer = Customer.get(Integer.parseInt(customerId));
+                if (customer != null) {
+                    if (customer.user_id == user.id) {
+                        return gson.toJson(customer);
                     } else
                         response.status(403);
                 } else
@@ -93,22 +93,22 @@ public class Api {
                 return "";
             });
 
-            post("/costumers/", (request, response) -> {
+            post("/customers/", (request, response) -> {
                 User user = request.attribute(Application.USER_KEY);
-                Costumer costumer = gson.fromJson(request.body(), Costumer.class);
-                costumer.user_id = user.id;
-                costumer.id = costumer.save();
+                Customer customer = gson.fromJson(request.body(), Customer.class);
+                customer.user_id = user.id;
+                customer.id = customer.save();
                 response.status(201);
-                return gson.toJson(costumer);
+                return gson.toJson(customer);
             });
 
-            delete("/costumers/:id/", (request, response) -> {
+            delete("/customers/:id/", (request, response) -> {
                 User user = request.attribute(Application.USER_KEY);
-                String costumerId = request.params(":id");
-                Costumer costumer = Costumer.get(Integer.parseInt(costumerId));
-                if (costumer != null) {
-                    if (costumer.user_id == user.id) {
-                        costumer.delete();
+                String customerId = request.params(":id");
+                Customer customer = Customer.get(Integer.parseInt(customerId));
+                if (customer != null) {
+                    if (customer.user_id == user.id) {
+                        customer.delete();
                     } else {
                         halt(403);
                     }
@@ -118,8 +118,8 @@ public class Api {
                 return "";
             });
 
-            // get /api/costumers/:id/invoices
-            // get /api/costumers/:id/invoices/:invoiceId
+            // get /api/customers/:id/invoices
+            // get /api/customers/:id/invoices/:invoiceId
             // before's segurança
 
         });

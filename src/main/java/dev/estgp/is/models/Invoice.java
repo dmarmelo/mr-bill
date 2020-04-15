@@ -16,7 +16,7 @@ public class Invoice implements Serializable {
 
     // Database fields
     public int id;
-    public int costumer_id;
+    public int customer_id;
     public double amount;
     public String date;
     public int complete;
@@ -33,7 +33,7 @@ public class Invoice implements Serializable {
     public Invoice(DBRow row) {
         super();
         this.id = (int) row.get("id");
-        this.costumer_id = (int) row.get("costumer_id");
+        this.customer_id = (int) row.get("customer_id");
         this.amount = (double) row.get("amount");
         this.date = (String) row.get("date");
         this.complete = (int) row.get("complete");
@@ -46,10 +46,10 @@ public class Invoice implements Serializable {
         return rows.first(Invoice.class);
     }
 
-    // Returns invoice by costumer
-    public static List<Invoice> getByCostumer(Costumer costumer) {
+    // Returns invoice by customer
+    public static List<Invoice> getByCustomer(Customer customer) {
         ArrayList<Invoice> invoices = new ArrayList<>();
-        String sql = String.format("select * from invoice where costumer_id=%d", costumer.id);
+        String sql = String.format("select * from invoice where customer_id=%d", customer.id);
         DBRowList rows = conn.executeQuery(sql);
         for (DBRow row: rows) {
             Invoice invoice = new Invoice(row);
@@ -70,10 +70,10 @@ public class Invoice implements Serializable {
         return invoices;
     }
 
-    // Returns list of costumer invoices
-    public static ArrayList<Invoice> get(Costumer costumer) {
+    // Returns list of customer invoices
+    public static ArrayList<Invoice> get(Customer customer) {
         ArrayList<Invoice> invoices = new ArrayList<>();
-        DBRowList rows = conn.executeQuery("select * from invoice where costumer_id=" + costumer.id);
+        DBRowList rows = conn.executeQuery("select * from invoice where customer_id=" + customer.id);
         for (DBRow row : rows) {
             Invoice invoice = new Invoice(row);
             invoices.add(invoice);
@@ -83,16 +83,15 @@ public class Invoice implements Serializable {
 
     // Inserts this invoice
     public int insert() {
-        String sql = String.format(Locale.US, "INSERT INTO invoice (costumer_id, amount, date, complete) VALUES (%d, %f, '%s', %d)",
-                costumer_id, amount, date, complete);
+        String sql = String.format(Locale.US, "INSERT INTO invoice (customer_id, amount, date, complete) VALUES (%d, %f, '%s', %d)",
+                customer_id, amount, date, complete);
         return conn.executeUpdate(sql);
     }
 
     // Updates this invoice
     public int update() {
-        String sql = String.format(Locale.US, "UPDATE invoice SET costumer_id=%d, amount=%f, date='%s', complete=%d WHERE id=%d",
-                costumer_id, amount, date, complete, id);
-        System.out.println(sql);
+        String sql = String.format(Locale.US, "UPDATE invoice SET customer_id=%d, amount=%f, date='%s', complete=%d WHERE id=%d",
+                customer_id, amount, date, complete, id);
         return conn.executeUpdate(sql);
     }
 
@@ -115,7 +114,7 @@ public class Invoice implements Serializable {
     public String toString() {
         return "Invoice {" +
                 "id=" + id +
-                ", costumer_id=" + costumer_id +
+                ", customer_id=" + customer_id +
                 ", amount=" + amount +
                 ", date='" + date + '\'' +
                 ", complete=" + complete +
@@ -126,8 +125,8 @@ public class Invoice implements Serializable {
         return id;
     }
 
-    public int getCostumer_id() {
-        return costumer_id;
+    public int getCustomer_id() {
+        return customer_id;
     }
 
     public double getAmount() {

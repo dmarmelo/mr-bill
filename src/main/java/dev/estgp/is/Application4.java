@@ -1,7 +1,7 @@
 package dev.estgp.is;
 
 import com.google.gson.Gson;
-import dev.estgp.is.models.Costumer;
+import dev.estgp.is.models.Customer;
 import dev.estgp.is.models.Invoice;
 import dev.estgp.is.models.User;
 import dev.estgp.is.utils.freemarker.FreemarkerContext;
@@ -69,58 +69,58 @@ public class Application4 {
             FreemarkerContext context = new FreemarkerContext();
             User user = request.session().attribute("user");
             context.put("user", user);
-            context.put("costumers", Costumer.get(user));
+            context.put("customers", Customer.get(user));
             return engine.render(context, "app.ftl");
         });
 
-        post("/app/costumer/", (request, response) -> {
+        post("/app/customer/", (request, response) -> {
             User user = request.session().attribute("user");
             String name = request.queryParams("name");
             String email = request.queryParams("email");
-            Costumer costumer = new Costumer();
-            costumer.name = name;
-            costumer.email = email;
-            costumer.user_id = user.id;
-            costumer.save();
+            Customer customer = new Customer();
+            customer.name = name;
+            customer.email = email;
+            customer.user_id = user.id;
+            customer.save();
             response.redirect("/app/");
             return "";
         });
 
-        get("/app/costumer/:id/", (request, response) -> {
+        get("/app/customer/:id/", (request, response) -> {
             String id = request.params(":id");
             FreemarkerContext context = new FreemarkerContext();
             User user = request.session().attribute("user");
             context.put("user", user);
-            Costumer costumer = Costumer.get(Integer.parseInt(id));
-            context.put("costumer", costumer);
-            context.put("invoices", Invoice.get(costumer));
-            return engine.render(context, "costumer.ftl");
+            Customer customer = Customer.get(Integer.parseInt(id));
+            context.put("customer", customer);
+            context.put("invoices", Invoice.get(customer));
+            return engine.render(context, "customer.ftl");
         });
 
-        get("/app/costumer/:id/delete/", (request, response) -> {
+        get("/app/customer/:id/delete/", (request, response) -> {
             String id = request.params(":id");
-            Costumer costumer = Costumer.get(Integer.parseInt(id));
-            costumer.delete();
+            Customer customer = Customer.get(Integer.parseInt(id));
+            customer.delete();
             response.redirect("/app/");
             return "";
         });
 
-        post("/app/costumer/:id/invoice/", (request, response) -> {
+        post("/app/customer/:id/invoice/", (request, response) -> {
             String id = request.params(":id");
             User user = request.session().attribute("user");
-            Costumer costumer = Costumer.get(Integer.parseInt(id));
+            Customer customer = Customer.get(Integer.parseInt(id));
             Invoice invoice = new Invoice();
-            invoice.costumer_id = costumer.id;
+            invoice.customer_id = customer.id;
             invoice.date = request.queryParams("date");
             invoice.amount = Float.parseFloat(request.queryParams("amount"));
             invoice.save();
-            response.redirect("/app/costumer/" + id + "/");
+            response.redirect("/app/customer/" + id + "/");
             return "";
         });
 
         // TODO website
-        // 1. /app/costumer/:id/ - Validar que o user é "dono" destes costumers. Usar regra "before"
-        // 2. Permitir actualizar e remover Costumers e Invoices
+        // 1. /app/customer/:id/ - Validar que o user é "dono" destes customers. Usar regra "before"
+        // 2. Permitir actualizar e remover Customers e Invoices
 
         // API endpoints
         get("/api/users/", (request, response) -> {
@@ -180,19 +180,19 @@ public class Application4 {
             return "";
         });
 
-        get("/api/costumers/", (request, response) -> {
+        get("/api/customers/", (request, response) -> {
             // Retornar a lista de todos os meus clientes
             User user = request.attribute(USER_KEY);
-            return gson.toJson(Costumer.get(user));
+            return gson.toJson(Customer.get(user));
         });
 
-        get("/api/costumers/:id/", (request, response) -> {
+        get("/api/customers/:id/", (request, response) -> {
             User user = request.attribute(USER_KEY);
-            String costumerId = request.params(":id");
-            Costumer costumer = Costumer.get(Integer.parseInt(costumerId));
-            if (costumer != null) {
-                if (costumer.user_id == user.id) {
-                    return gson.toJson(costumer);
+            String customerId = request.params(":id");
+            Customer customer = Customer.get(Integer.parseInt(customerId));
+            if (customer != null) {
+                if (customer.user_id == user.id) {
+                    return gson.toJson(customer);
                 } else
                     response.status(403);
             } else
@@ -200,22 +200,22 @@ public class Application4 {
             return "";
         });
 
-        post("/api/costumers/", (request, response) -> {
+        post("/api/customers/", (request, response) -> {
             User user = request.attribute(USER_KEY);
-            Costumer costumer = gson.fromJson(request.body(), Costumer.class);
-            costumer.user_id = user.id;
-            costumer.id = costumer.save();
+            Customer customer = gson.fromJson(request.body(), Customer.class);
+            customer.user_id = user.id;
+            customer.id = customer.save();
             response.status(201);
-            return gson.toJson(costumer);
+            return gson.toJson(customer);
         });
 
-        delete("/api/costumers/:id/", (request, response) -> {
+        delete("/api/customers/:id/", (request, response) -> {
             User user = request.attribute(USER_KEY);
-            String costumerId = request.params(":id");
-            Costumer costumer = Costumer.get(Integer.parseInt(costumerId));
-            if (costumer != null) {
-                if (costumer.user_id == user.id) {
-                    costumer.delete();
+            String customerId = request.params(":id");
+            Customer customer = Customer.get(Integer.parseInt(customerId));
+            if (customer != null) {
+                if (customer.user_id == user.id) {
+                    customer.delete();
                 } else {
                     halt(403);
                 }
@@ -225,8 +225,8 @@ public class Application4 {
             return "";
         });
 
-        // get /api/costumers/:id/invoices
-        // get /api/costumers/:id/invoices/:invoiceId
+        // get /api/customers/:id/invoices
+        // get /api/customers/:id/invoices/:invoiceId
         // before's segurança
 
     }

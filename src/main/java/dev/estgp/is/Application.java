@@ -16,6 +16,8 @@ public class Application {
     // Configure freemarker engine
     public static FreemarkerEngine engine = null;
     public static final String USER_KEY = "user.key";
+    public static final String CUSTOMER_KEY = "customer.key";
+    public static final String INVOICE_KEY = "invoice.key";
 
     public static void main(String[] args) {
         // Check arguments for development mode flag
@@ -42,7 +44,7 @@ public class Application {
         // Configure database connection
         SQLiteConn conn = SQLiteConn.getSharedInstance();
         conn.init("data/database.db");
-        //conn.recreate("data/database.sql");
+        conn.recreate("data/database.sql");
 
         // Define application Routes
         App.defineRoutes();
