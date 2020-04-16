@@ -5,6 +5,7 @@ import dev.estgp.is.models.Customer;
 import dev.estgp.is.models.Invoice;
 import dev.estgp.is.models.User;
 import dev.estgp.is.utils.freemarker.FreemarkerContext;
+import org.eclipse.jetty.http.HttpStatus;
 
 import java.util.List;
 
@@ -64,7 +65,7 @@ public class App {
                 User user = request.session().attribute(Application.USER_KEY);
                 if (user == null) {
                     response.redirect("/login/");
-                    halt();
+                    Application.sendError(HttpStatus.Code.UNAUTHORIZED);
                 }
                 else {
                     request.attribute(Application.USER_KEY, user);
@@ -103,14 +104,14 @@ public class App {
                 try {
                     idInt = Integer.parseInt(id);
                 } catch (NumberFormatException e) {
-                    Application.sendError(400);
+                    Application.sendError(HttpStatus.Code.BAD_REQUEST);
                 }
                 Customer customer = Customer.get(idInt);
                 if (customer == null) {
-                    Application.sendError(404);
+                    Application.sendError(HttpStatus.Code.NOT_FOUND);
                 }
                 else if (customer.user_id != user.id) {
-                    Application.sendError(403);
+                    Application.sendError(HttpStatus.Code.FORBIDDEN);
                 }
                 else {
                     request.attribute(Application.CUSTOMER_KEY, customer);
@@ -140,6 +141,31 @@ public class App {
                 return "";
             });
 
+            // Edit Customer
+            get("/customer/:id/edit/", (request, response) -> {
+                User user = request.attribute(Application.USER_KEY);
+                Customer customer = request.attribute(Application.CUSTOMER_KEY);
+                FreemarkerContext context = new FreemarkerContext();
+                context.put("title", "Customer Edit");
+                context.put("user", user);
+                context.put("customer", customer);
+                return Application.engine.render(context, "customerEdit.ftl");
+            });
+
+            // Edit Customer Action
+            post("/customer/:id/edit/", (request, response) -> {
+                Customer customer = request.attribute(Application.CUSTOMER_KEY);
+                String name = request.queryParams("name");
+                String email = request.queryParams("email");
+                if (name != null && !name.isBlank())
+                    customer.name = name;
+                if (email != null && !email.isBlank())
+                    customer.email = email;
+                customer.save();
+                response.redirect("/app/");
+                return "";
+            });
+
             // Creates new Invoice
             post("/customer/:id/invoice/", (request, response) -> {
                 Customer customer = request.attribute(Application.CUSTOMER_KEY);
@@ -149,7 +175,7 @@ public class App {
                 try {
                     amountDouble = Double.parseDouble(amount);
                 } catch (NumberFormatException e) {
-                    Application.sendError(400);
+                    Application.sendError(HttpStatus.Code.BAD_REQUEST);
                 }
                 Invoice invoice = new Invoice();
                 invoice.customer_id = customer.id;
@@ -169,16 +195,16 @@ public class App {
                 try {
                     idInt = Integer.parseInt(id);
                 } catch (NumberFormatException e) {
-                    Application.sendError(400);
+                    Application.sendError(HttpStatus.Code.BAD_REQUEST);
                 }
                 Invoice invoice = Invoice.get(idInt);
                 if (invoice == null) {
-                    Application.sendError(404);
+                    Application.sendError(HttpStatus.Code.NOT_FOUND);
                 }
                 else {
                     Customer customer = Customer.get(invoice.customer_id);
                     if (customer.user_id != user.id) {
-                        Application.sendError(403);
+                        Application.sendError(HttpStatus.Code.FORBIDDEN);
                     }
                     else {
                         request.attribute(Application.CUSTOMER_KEY, customer);
@@ -206,8 +232,39 @@ public class App {
                 return "";
             });
 
-            // TODO Permitir atualizar Customers e Invoices
-            // Modifique o template customer.html de modo a permitir remover facturas e a editar os dados de um cliente.
+            // Edit Invoice
+            get("/invoice/:id/edit/", (request, response) -> {
+                User user = request.attribute(Application.USER_KEY);
+                Customer customer = request.attribute(Application.CUSTOMER_KEY);
+                Invoice invoice = request.attribute(Application.INVOICE_KEY);
+                FreemarkerContext context = new FreemarkerContext();
+                context.put("title", "Customer Edit");
+                context.put("user", user);
+                context.put("customer", customer);
+                context.put("invoice", invoice);
+                return Application.engine.render(context, "invoiceEdit.ftl");
+            });
+
+            // Edit Invoice Action
+            post("/invoice/:id/edit/", (request, response) -> {
+                Customer customer = request.attribute(Application.CUSTOMER_KEY);
+                Invoice invoice = request.attribute(Application.INVOICE_KEY);
+                String date = request.queryParams("date");
+                String amount = request.queryParams("amount");
+                double amountDouble = 0;
+                try {
+                    amountDouble = Double.parseDouble(amount);
+                } catch (NumberFormatException e) {
+                    Application.sendError(HttpStatus.Code.BAD_REQUEST);
+                }
+                if (date != null && !date.isBlank())
+                    invoice.date = date;
+                invoice.amount = amountDouble;
+                invoice.save();
+                response.redirect("/app/customer/" + customer.id + "/");
+                return "";
+            });
+
         });
     }
 }

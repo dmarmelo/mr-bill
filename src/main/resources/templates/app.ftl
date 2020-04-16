@@ -7,6 +7,7 @@
         <#list customers as customer>
             <li>
                 <a href="/app/customer/${customer.id}/">${customer.name} - ${customer.email}</a>
+                <a href="/app/customer/${customer.id}/edit/">(Edit)</a>
                 <a href="/app/customer/${customer.id}/delete/">(X)</a>
             </li>
         </#list>

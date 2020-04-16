@@ -5,6 +5,7 @@ import dev.estgp.is.app.App;
 import dev.estgp.is.utils.freemarker.FreemarkerContext;
 import dev.estgp.is.utils.freemarker.FreemarkerEngine;
 import dev.estgp.is.utils.sqlite3.SQLiteConn;
+import org.eclipse.jetty.http.HttpStatus;
 
 import static spark.Spark.*;
 
@@ -52,30 +53,33 @@ public class Application {
         // Define API Routes
         Api.defineRoutes();
 
-        // Errors
-        get("/error/:code", (request, response) -> {
+        /*get("/error/:code", (request, response) -> {
             String code = request.params(":code");
-            sendError(Integer.parseInt(code));
+            sendError(HttpStatus.getCode(Integer.parseInt(code)));
             return "";
-        });
+        });*/
 
         notFound((req, res) -> {
             FreemarkerContext context = new FreemarkerContext();
-            context.put("code", 404);
+            HttpStatus.Code code = HttpStatus.Code.NOT_FOUND;
+            context.put("code", code.getCode());
+            context.put("description", code.getMessage());
             return engine.render(context, "error.ftl");
         });
 
         internalServerError((req, res) -> {
             FreemarkerContext context = new FreemarkerContext();
-            context.put("code", 500);
+            HttpStatus.Code code = HttpStatus.Code.INTERNAL_SERVER_ERROR;
+            context.put("code", code.getCode());
+            context.put("description", code.getMessage());
             return engine.render(context, "error.ftl");
         });
-
     }
 
-    public static void sendError(int code) {
+    public static void sendError(HttpStatus.Code code) {
         FreemarkerContext context = new FreemarkerContext();
-        context.put("code", code);
-        halt(code, engine.render(context, "error.ftl"));
+        context.put("code", code.getCode());
+        context.put("description", code.getMessage());
+        halt(code.getCode(), engine.render(context, "error.ftl"));
     }
 }

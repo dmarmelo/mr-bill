@@ -1,7 +1,7 @@
 <#import "lib/utils.ftl" as u>
 
 <@u.page>
-    <p>Current user: ${user.name} (<a href="/logout/">Logout</a>)</p>
+    <p>Current user: ${user.name} (<a href="/logout/">logout</a>)</p>
 
     <h3>Invoices for ${customer.name}</h3>
     <ul>
@@ -9,6 +9,7 @@
         <li>
             ${invoice.date} - ${invoice.amount}
             <#if invoice.complete == 0>
+                <a href="/app/invoice/${invoice.id}/edit/">(Edit)</a>
                 <a href="/app/invoice/${invoice.id}/complete/">(Complete)</a>
             <#else>
                 (Completed)
