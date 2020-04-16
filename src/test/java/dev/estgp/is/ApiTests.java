@@ -16,13 +16,12 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests the Spark application
  */
-public class Tests {
+public class ApiTests {
 
     // The Http client
     private final HttpClient httpClient = HttpClient.newBuilder().build();
@@ -62,6 +61,19 @@ public class Tests {
     }
 
     @Test
+    // Check if the endpoint returns the correct list of all system users
+    public void testUserListResults() throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8000/api/users/"))
+                .GET()
+                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        String allUsers = gson.toJson(User.all());
+        assertEquals(allUsers, response.body());
+    }
+
+    @Test
     // Customer endpoint return 200 OK
     public void testCustomerListAuthorizedUser() throws IOException, InterruptedException {
         User user = User.get(1);
@@ -84,6 +96,21 @@ public class Tests {
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(401, response.statusCode());
+    }
+
+    @Test
+    // Customer endpoint really deletes the customer from the database
+    public void testCustomerDelete() throws IOException, InterruptedException {
+        User user = User.get(1);
+        Customer customer = Customer.get(1);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8000/api/customers/" + customer.id + "/?apiKey=" + user.apikey))
+                .DELETE()
+                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(200, response.statusCode());
+        assertNull(Customer.get(customer.id));
     }
 
     @Test
@@ -115,4 +142,6 @@ public class Tests {
         Customer res = gson.fromJson(response.body(), Customer.class);
         assertNotEquals(res, customer);
     }
+
+    // TODO Implemente mais alguns testes de integração.
 }
