@@ -13,8 +13,8 @@ import static spark.Spark.*;
  */
 public class Application {
 
-    // Configure freemarker engine
     public static FreemarkerEngine engine = null;
+
     public static final String USER_KEY = "user.key";
     public static final String CUSTOMER_KEY = "customer.key";
     public static final String INVOICE_KEY = "invoice.key";
@@ -31,7 +31,7 @@ public class Application {
         // Configure Spark Port
         port(8000);
 
-        // If in development mode set the static files directory and the templates directory to the relative path of the files
+        // If in development mode set the static files directory and the Freemarker templates directory to the relative path of the files
         if (devMode) {
             staticFiles.externalLocation("src/main/resources/public");
             engine = new FreemarkerEngine("src/main/resources/templates");
