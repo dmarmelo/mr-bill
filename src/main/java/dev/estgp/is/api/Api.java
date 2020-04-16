@@ -134,6 +134,8 @@ public class Api {
             // Deletes a Customer
             delete("/customers/:id/", (request, response) -> {
                 Customer customer = request.attribute(Application.CUSTOMER_KEY);
+                // Remove all customer Invoices
+                Invoice.getByCustomer(customer).forEach(Invoice::delete);
                 customer.delete();
                 return "";
             });
@@ -154,7 +156,60 @@ public class Api {
                 return gson.toJson(invoice);
             });
 
-            // TODO get /api/customers/:id/invoices/:invoiceId
+            // Check if the Invoice belongs to the Customer
+            before("/customers/:id/invoices/:iid/*", (request, response) -> {
+                Customer customer = request.attribute(Application.CUSTOMER_KEY);
+                String id = request.params(":iid");
+                int idInt = 0;
+                try {
+                    idInt = Integer.parseInt(id);
+                } catch (NumberFormatException e) {
+                    halt(400);
+                }
+                Invoice invoice = Invoice.get(idInt);
+                if (invoice == null) {
+                    halt(404);
+                }
+                else if (invoice.customer_id != customer.id) {
+                    halt(403);
+                }
+                else {
+                    request.attribute(Application.INVOICE_KEY, invoice);
+                }
+            });
+
+            // Returns the invoice from the Customer
+            get("/customers/:id/invoices/:iid/", (request, response) -> {
+                Invoice invoice = request.attribute(Application.INVOICE_KEY);
+                return gson.toJson(invoice);
+            });
+
+            // Updates an Invoice form the Customer
+            put("/customers/:id/invoices/:iid/", (request, response) -> {
+                Invoice invoiceDb = request.attribute(Application.INVOICE_KEY);
+                Invoice invoice = gson.fromJson(request.body(), Invoice.class);
+                if (invoice.date != null && !invoice.date.isBlank())
+                    invoiceDb.date = invoice.date;
+                invoiceDb.amount = invoice.amount;
+                invoiceDb.save();
+                response.status(200);
+                return gson.toJson(invoiceDb);
+            });
+
+            // Deletes an Invoice from the Customer
+            delete("/customers/:id/invoices/:iid/", (request, response) -> {
+                Invoice invoice = request.attribute(Application.INVOICE_KEY);
+                invoice.delete();
+                return "";
+            });
+
+            // Completes an Invoice from the Customer
+            post("/customers/:id/invoices/:iid/complete", (request, response) -> {
+                Invoice invoice = request.attribute(Application.INVOICE_KEY);
+                invoice.complete = 1;
+                invoice.save();
+                return gson.toJson(invoice);
+            });
 
             // Intercept all requests to Invoice to verify if the customer id is one of the logged user
             before("/invoices/:id/*", (request, response) -> {
@@ -194,7 +249,6 @@ public class Api {
                 Invoice invoice = gson.fromJson(request.body(), Invoice.class);
                 if (invoice.date != null && !invoice.date.isBlank())
                     invoiceDb.date = invoice.date;
-                // TODO Check for 0?
                 invoiceDb.amount = invoice.amount;
                 invoiceDb.save();
                 response.status(200);
@@ -208,8 +262,15 @@ public class Api {
                 return "";
             });
 
-            // TODO Complete Invoice
-            //      Check for security breaches
+            // Completes an Invoice
+            post("/invoices/:id/complete/", (request, response) -> {
+                Invoice invoice = request.attribute(Application.INVOICE_KEY);
+                invoice.complete = 1;
+                invoice.save();
+                return gson.toJson(invoice);
+            });
+
+            // TODO Check for security breaches
 
         });
     }
