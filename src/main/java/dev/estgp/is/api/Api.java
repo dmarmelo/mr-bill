@@ -98,14 +98,14 @@ public class Api {
                 try {
                     idInt = Integer.parseInt(id);
                 } catch (NumberFormatException e) {
-                    Application.sendError(400);
+                    halt(400);
                 }
                 Customer customer = Customer.get(idInt);
                 if (customer == null) {
-                    Application.sendError(404);
+                    halt(404);
                 }
                 else if (customer.user_id != user.id) {
-                    Application.sendError(403);
+                    halt(403);
                 }
                 else {
                     request.attribute(Application.CUSTOMER_KEY, customer);
@@ -119,7 +119,7 @@ public class Api {
             });
 
             // Updates a Customer
-            put("/customer/:id/", (request, response) -> {
+            put("/customers/:id/", (request, response) -> {
                 Customer customerDb = request.attribute(Application.CUSTOMER_KEY);
                 Customer customer = gson.fromJson(request.body(), Customer.class);
                 if (customer.name != null && !customer.name.isBlank())
@@ -164,16 +164,16 @@ public class Api {
                 try {
                     idInt = Integer.parseInt(id);
                 } catch (NumberFormatException e) {
-                    Application.sendError(400);
+                    halt(400);
                 }
                 Invoice invoice = Invoice.get(idInt);
                 if (invoice == null) {
-                    Application.sendError(404);
+                    halt(404);
                 }
                 else {
                     Customer customer = Customer.get(invoice.customer_id);
                     if (customer.user_id != user.id) {
-                        Application.sendError(403);
+                        halt(403);
                     }
                     else {
                         request.attribute(Application.CUSTOMER_KEY, customer);
@@ -202,7 +202,7 @@ public class Api {
             });
 
             // Deletes a Invoice
-            delete("/customers/:id/", (request, response) -> {
+            delete("/invoices/:id/", (request, response) -> {
                 Invoice invoice = request.attribute(Application.INVOICE_KEY);
                 invoice.delete();
                 return "";
