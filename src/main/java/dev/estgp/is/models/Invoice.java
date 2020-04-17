@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Invoice model
@@ -139,5 +140,22 @@ public class Invoice implements Serializable {
 
     public int getComplete() {
         return complete;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Invoice invoice = (Invoice) o;
+        return id == invoice.id &&
+                customer_id == invoice.customer_id &&
+                Double.compare(invoice.amount, amount) == 0 &&
+                complete == invoice.complete &&
+                Objects.equals(date, invoice.date);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, customer_id, amount, date, complete);
     }
 }

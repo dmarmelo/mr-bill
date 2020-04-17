@@ -270,8 +270,6 @@ public class Api {
                 return gson.toJson(invoice);
             });
 
-            // TODO Check for security breaches
-
         });
     }
 }
