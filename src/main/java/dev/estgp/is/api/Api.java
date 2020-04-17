@@ -187,6 +187,9 @@ public class Api {
             // Updates an Invoice form the Customer
             put("/customers/:id/invoices/:iid/", (request, response) -> {
                 Invoice invoiceDb = request.attribute(Application.INVOICE_KEY);
+                if (invoiceDb.complete == 1) {
+                    halt(403);
+                }
                 Invoice invoice = gson.fromJson(request.body(), Invoice.class);
                 if (invoice.date != null && !invoice.date.isBlank())
                     invoiceDb.date = invoice.date;
@@ -246,6 +249,9 @@ public class Api {
             // Updates a Invoice
             put("/invoices/:id/", (request, response) -> {
                 Invoice invoiceDb = request.attribute(Application.INVOICE_KEY);
+                if (invoiceDb.complete == 1) {
+                    halt(403);
+                }
                 Invoice invoice = gson.fromJson(request.body(), Invoice.class);
                 if (invoice.date != null && !invoice.date.isBlank())
                     invoiceDb.date = invoice.date;

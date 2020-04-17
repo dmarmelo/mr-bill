@@ -344,7 +344,7 @@ public class ApiTests {
     public void testInvoiceUpdate() throws IOException, InterruptedException {
         User user = User.get(1);
         Customer customer = Customer.get(user).get(0);
-        Invoice invoice = Invoice.get(customer).get(0);
+        Invoice invoice = Invoice.get(customer).stream().filter(i -> i.complete == 0).findFirst().get();
         invoice.date = "2020-04-17";
         invoice.amount = 19.99;
         HttpRequest request = HttpRequest.newBuilder()
@@ -357,6 +357,23 @@ public class ApiTests {
         Invoice actual = Invoice.get(invoice.id);
         assertEquals(invoice.date, actual.date);
         assertEquals(invoice.amount, actual.amount);
+    }
+
+    @Test
+    // Invoice endpoint really updates the invoice in the database
+    public void testInvoiceUpdateCompleted() throws IOException, InterruptedException {
+        User user = User.get(1);
+        Customer customer = Customer.get(user).get(0);
+        Invoice invoice = Invoice.get(customer).stream().filter(i -> i.complete == 1).findFirst().get();
+        invoice.date = "2020-04-17";
+        invoice.amount = 19.99;
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8000/api/customers/" + customer.id + "/invoices/" + invoice.id + "/?apiKey=" + user.apikey))
+                .PUT(HttpRequest.BodyPublishers.ofString(gson.toJson(invoice)))
+                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(403, response.statusCode());
     }
 
     @Test

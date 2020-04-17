@@ -249,6 +249,9 @@ public class App {
             post("/invoice/:id/edit/", (request, response) -> {
                 Customer customer = request.attribute(Application.CUSTOMER_KEY);
                 Invoice invoice = request.attribute(Application.INVOICE_KEY);
+                if (invoice.complete == 1) {
+                    Application.sendError(HttpStatus.Code.FORBIDDEN);
+                }
                 String date = request.queryParams("date");
                 String amount = request.queryParams("amount");
                 double amountDouble = 0;
