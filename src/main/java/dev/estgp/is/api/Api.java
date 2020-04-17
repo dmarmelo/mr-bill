@@ -151,7 +151,7 @@ public class Api {
                 Customer customer = request.attribute(Application.CUSTOMER_KEY);
                 Invoice invoice = gson.fromJson(request.body(), Invoice.class);
                 invoice.customer_id = customer.id;
-                invoice.id = customer.save();
+                invoice.id = invoice.save();
                 response.status(201);
                 return gson.toJson(invoice);
             });
@@ -204,7 +204,7 @@ public class Api {
             });
 
             // Completes an Invoice from the Customer
-            post("/customers/:id/invoices/:iid/complete", (request, response) -> {
+            post("/customers/:id/invoices/:iid/complete/", (request, response) -> {
                 Invoice invoice = request.attribute(Application.INVOICE_KEY);
                 invoice.complete = 1;
                 invoice.save();
