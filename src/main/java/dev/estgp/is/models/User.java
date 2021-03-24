@@ -59,6 +59,13 @@ public class User implements Serializable {
         return rows.first(User.class);
     }
 
+    // Find user by username
+    public static User findByUsername(String username) {
+        String sql = String.format("select * from user where username='%s'", username);
+        DBRowList rows = conn.executeQuery(sql);
+        return rows.first(User.class);
+    }
+
     // Returns list of users
     public static ArrayList<User> all() {
         ArrayList<User> users = new ArrayList<>();

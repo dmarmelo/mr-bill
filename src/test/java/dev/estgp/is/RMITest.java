@@ -5,6 +5,7 @@ import dev.estgp.is.rpc.RMIInterface;
 import dev.estgp.is.utils.sqlite3.SQLiteConn;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
@@ -14,6 +15,7 @@ import java.rmi.RemoteException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Disabled
 public class RMITest {
 
     static RMIInterface look_up;

@@ -5,6 +5,7 @@ import dev.estgp.is.Application;
 import dev.estgp.is.models.Customer;
 import dev.estgp.is.models.Invoice;
 import dev.estgp.is.models.User;
+import dev.estgp.is.payload.Login;
 
 import static spark.Spark.*;
 
@@ -19,6 +20,18 @@ public class Api {
             get("/users/", (request, response) -> {
                 response.type("application/json");
                 return gson.toJson(User.all());
+            });
+
+            post("/users/", (request, response) -> {
+                User user = gson.fromJson(request.body(), User.class);
+                User foundUser = User.findByUsername(user.getUsername());
+                if (foundUser == null) {
+                    user.save();
+                    return gson.toJson(user);
+                } else {
+                    halt(409);
+                }
+                return "";
             });
 
             get("/users/:id/", (request, response) -> {
@@ -58,8 +71,8 @@ public class Api {
 
             post("/user/login/", (request, response) -> {
                 response.type("application/json");
-                User user = gson.fromJson(request.body(), User.class);
-                User auth = User.authenticate(user.username, user.password);
+                Login login = gson.fromJson(request.body(), Login.class);
+                User auth = User.authenticate(login.getUsername(), login.getPassword());
                 if (auth != null) {
                     request.session().attribute(Application.USER_KEY, auth);
                 } else {
